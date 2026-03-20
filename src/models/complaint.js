@@ -1,99 +1,56 @@
-var complain = "       ".trim().toLowerCase()
+import complaints from "../test/testcases.js";  // importing test cases from another file
 
-// Helper function to check whole-word keywords
-function containsKeyword(text, keyword) {
-  return new RegExp(`\\b${keyword}`).test(text);
+
+var processedIds = [];  // array needs to be declared before it is getting used 
+complaints.forEach((complaint)=>{  // looping over each complaint from the complaints array 
+    isValidComplaint(complaint);
+})
+
+
+
+function isValidComplaint(complaint){
+    if (!complaint || !complaint.complaint_id || !complaint.issue_type || !complaint.priority || !complaint.customer_type || !complaint.created_time || !complaint.status){
+        return false;
+    }
+
+    if (typeof complaint.complaint_id !== 'string' || !/^C\d+$/.test(complaint.complaint_id)){
+        return {validation : false , reason: "Not a valid complaint id"}
+    }
+
+    if (processedIds.includes(complaint.complaint_id)){
+        console.log(complaint.complaint_id)
+        return {validation: false , reason: "Duplicate complaint id"}
+    }
+
+    if(!["payment", "technical","account", "delivery"].includes(complaint.issue_type)){
+        console.log(complaint.issue_type)
+        return {validation: false, reason: "Issue type wrong"}
+    }
+
+    if(!["high", "medium", "low"].includes(complaint.priority)){
+        console.log(complaint.priority)
+        return {validation: false, reason: "Priority type wrong"}
+    }
+
+    if(!["premium", "regular"].includes(complaint.customer_type)){
+        console.log(complaint.customer_type)
+        return {validation: false, reason: "Priority type wrong"}
+    }
+
+
+    if(!/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/.test(complaint.created_time)){
+        console.log(complaint.created_time)
+        return {validation: false, reason:"Invalid Time Stamp"}
+    }
+
+    if(!["resolved", "unresolved"].includes(complaint.status)){
+        console.log(complaint.status)
+        return {validation: false, reason:"Invalid Status"}
+    }
+
+    processedIds.push(complaint.complaint_id)
+
+
+
+
 }
-
-// These keywords will be from finance based complaints 
-const highPriorityKeywords = [
-  "money",
-  "refund",
-  "fraud",
-  "scam",
-  "unauthorized",
-  "charged",
-  "payment failed",
-  "deducted",
-  "not delivered",
-  "missing",
-  "bank",
-  "account"
-];
-
-const mediumPriorityKeywords = [
-  "delay",
-  "late",
-  "delayed",
-  "wrong item",
-  "incorrect item",
-  "damaged",
-  "defective",
-  "not working",
-  "replacement",
-  "exchange",
-  "where is my order",
-  "i need help"
-];
-
-
-// Mostly these keywords will be from experienced based complaints
-const lowPriorityKeywords = [
-  "slow",
-  "packaging",
-  "damaged box",
-  "color",
-  "size issue",
-  "not satisfied",
-  "quality",
-  "feedback",
-  "suggestion",
-  "improve"
-
-
-];
-
-// faulty complaints 
-const faultyComplaints = [
-  "bad",
-  "worst worst worst worst",
-  "aaaaaaa",
-  "!!!!!!!!!",
-  "you are stupid",
-  "not good",
-  "asdfghjkl",
-  "fix this now",
-  "delay delay delay delay",
-  "i hate this app",
-    "this app sucks",
-    "worst service ever" ,
-    "u guys are trash",
-    "???????????",
-    "abc"
-];
-
-const isHigh = highPriorityKeywords.some(k => containsKeyword(complain, k))
-const isMedium = mediumPriorityKeywords.some(k => containsKeyword(complain, k))
-const isLow = lowPriorityKeywords.some(k => containsKeyword(complain, k));
-
-const hasKeyword =
-  isHigh || isMedium || isLow
-
-  console.log(hasKeyword)
-
-// for every complaint it should not be less than 4 char and for every faulty keyword the keyword should not exist in the complaint 
-if 
-  ((complain.length < 4 && !hasKeyword) || faultyComplaints.some(keyword => complain.includes(keyword))){
-    console.log("Faulty complaint");
-}
-else if(isHigh){
-    console.log("High priority")
-}
-else if(isMedium){
-    console.log("Medium priority")
-}
-else {
-    console.log(`Low priority`)
-}
-
-
