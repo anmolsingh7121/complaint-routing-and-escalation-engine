@@ -1,12 +1,12 @@
 const complaints = [
 
-  // TC1 — valid, premium customer, high priority payment issue
+  // TC1 — valid, regular customer, high priority payment issue
   {
     complaint_id: "C001",
     issue_type: "payment",
     priority: "high",
-    customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
+    customer_type: "regular",
+    created_time: "2025-01-15T10:30:00",
     status: "unresolved"
   },
 
@@ -16,7 +16,7 @@ const complaints = [
     issue_type: "technical",
     priority: "low",
     customer_type: "regular",
-    created_time: "2024-01-10T08:00:00",
+    created_time: "2025-01-10T08:00:00",
     status: "unresolved"
   },
 
@@ -26,7 +26,7 @@ const complaints = [
     issue_type: "delivery",
     priority: "medium",
     customer_type: "premium",
-    created_time: "2024-01-14T09:00:00",
+    created_time: "2025-01-14T09:00:00",
     status: "resolved"
   },
 
@@ -36,7 +36,7 @@ const complaints = [
     issue_type: "payment",
     priority: "high",
     customer_type: "regular",
-    created_time: "2024-01-15T11:00:00",
+    created_time: "2025-01-15T11:00:00",
     status: "unresolved"
   },
 
@@ -45,7 +45,7 @@ const complaints = [
     complaint_id: "C004",
     issue_type: "technical",
     customer_type: "regular",
-    created_time: "2024-01-13T07:00:00",
+    created_time: "2025-01-13T07:00:00",
     status: "unresolved"
   },
 
@@ -63,9 +63,9 @@ const complaints = [
   {
     complaint_id: "C006",
     issue_type: "account",
-    priority: "urgent",           // not in ["high", "medium", "low"]
+    priority: "urgent",
     customer_type: "regular",
-    created_time: "2024-01-12T06:00:00",
+    created_time: "2100-01-12T06:00:00",  // future date, bumped to 2100
     status: "unresolved"
   },
 
@@ -75,17 +75,17 @@ const complaints = [
     issue_type: "payment",
     priority: "medium",
     customer_type: "regular",
-    created_time: "2023-12-01T10:00:00",   // very old
+    created_time: "2024-12-01T10:00:00",  // still old enough to escalate
     status: "unresolved"
   },
 
-  // TC9 — valid, unknown issue_type (keyword fallback logic needed)
+  // TC9 — valid, unknown issue_type
   {
     complaint_id: "C008",
     issue_type: "unknown",
     priority: "low",
     customer_type: "regular",
-    created_time: "2024-01-15T08:00:00",
+    created_time: "2025-01-15T08:00:00",
     status: "unresolved"
   },
 
@@ -94,8 +94,8 @@ const complaints = [
     complaint_id: "C009",
     issue_type: "technical",
     priority: "high",
-    customer_type: "vip",          // not in ["premium", "regular"]
-    created_time: "2024-01-15T09:00:00",
+    customer_type: "vip",
+    created_time: "2025-01-15T09:00:00",
     status: "unresolved"
   },
 
@@ -119,7 +119,7 @@ const complaints = [
     issue_type: "payment",
     priority: "high",
     customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
+    created_time: "2025-01-15T10:30:00",
     status: "unresolved"
   },
 
@@ -129,7 +129,7 @@ const complaints = [
     issue_type: "technical",
     priority: "low",
     customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
+    created_time: "2025-01-15T10:30:00",
     status: "unresolved"
   },
 
@@ -139,27 +139,27 @@ const complaints = [
     issue_type: "account",
     priority: "medium",
     customer_type: "premium",
-    created_time: "2023-11-01T10:00:00",  // very old + premium = early escalation
+    created_time: "2024-11-01T10:00:00",  // still old enough for early escalation
     status: "unresolved"
   },
 
-  // TC16 — invalid, future timestamp (complaint cannot be from the future)
+  // TC16 — invalid, future timestamp
   {
     complaint_id: "C012",
     issue_type: "delivery",
     priority: "medium",
     customer_type: "regular",
-    created_time: "2099-01-15T10:30:00",  // future date
+    created_time: "2100-01-15T10:30:00",  // bumped to 2100 to keep it future
     status: "unresolved"
   },
 
-  // TC17 — valid, unknown issue_type but keywords in complaint_id hint at department
+  // TC17 — valid, unknown issue_type
   {
     complaint_id: "C013",
     issue_type: "unknown",
     priority: "high",
     customer_type: "premium",
-    created_time: "2024-01-14T10:30:00",
+    created_time: "2025-01-14T10:30:00",
     status: "unresolved"
   },
 
@@ -169,8 +169,8 @@ const complaints = [
     issue_type: "payment",
     priority: "high",
     customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
-    status: "pending"               // not in ["resolved", "unresolved"]
+    created_time: "2025-01-15T10:30:00",
+    status: "pending"
   },
 
   // TC19 — valid, two complaints same customer same issue (not duplicate, different id)
@@ -179,28 +179,55 @@ const complaints = [
     issue_type: "payment",
     priority: "high",
     customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
+    created_time: "2023-01-15T10:30:00",  // kept old for escalation testing
     status: "unresolved"
   },
   {
-    complaint_id: "C016",           // different id, same customer type and issue
+    complaint_id: "C016",
     issue_type: "payment",
     priority: "high",
     customer_type: "premium",
-    created_time: "2024-01-15T10:30:00",
-    status: "unresolved"
+    created_time: "2025-01-15T10:30:00",
+    status: "resolved"
   },
 
   // TC20 — invalid, numeric complaint_id instead of string
   {
-    complaint_id: 12345,            // should be a string like "C001"
+    complaint_id: 12345,
     issue_type: "technical",
     priority: "low",
     customer_type: "regular",
-    created_time: "2024-01-15T10:30:00",
+    created_time: "2025-01-15T10:30:00",
     status: "unresolved"
   }
+,
+  // TC21 — same date, same customer type → original order kept
+ // TC21 — gets medium priority via: not old + premium + high priority (0+1+1 = 2 points)
+{
+  complaint_id: "C017",
+  issue_type: "payment",
+  priority: "high",          // point 3 ✅
+  customer_type: "premium",  // point 2 ✅
+  created_time: "2025-01-15T10:30:00",  // not old → no point
+  status: "unresolved"
+},
 
+// TC22 — gets medium priority via: old + not premium + not high (1+0+0 = 1 point)
+// wait this gives low not medium
+
+// correct TC22 — gets medium via: old + premium + not high (1+1+0 = 2 points)
+{
+  complaint_id: "C018",
+  issue_type: "payment",
+  priority: "medium",        // no point
+  customer_type: "premium",  // point 2 ✅
+  created_time: "2023-01-01T10:30:00",  // older than 545 days → point 1 ✅
+  status: "unresolved"
+}
+
+// expected result:
+// C017 stays before C018 → original order kept ✅
+// sort returns 0 → no swap happens
 ];
 
 export default complaints;
