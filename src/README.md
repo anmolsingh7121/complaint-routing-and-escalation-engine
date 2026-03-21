@@ -1,41 +1,44 @@
-# What is this project?
-→ A complaint routing and escalation engine that processes 
+# Complaint Routing and Escalation Engine
+
+## What is this project?
+→ A complaint routing and escalation engine that processes
   incoming complaints and routes them to the correct department,
   assigns priority, and flags complaints for escalation.
 
-
-Requirements:
+## Requirements
 → Node.js v18 or above
 
-Steps:
+## Steps
 → clone the repo
 → run: node src/index.js
+
+## Project Structure
 
 src/
   models/
     complaint.js     → validates complaints, filters invalid ones
   services/
     deptrouter.js    → routes complaints to departments
-    priority.js      → sorts complaints and assigns final priority
-    escalate.js      → assigns escalation status
+    priority.js      → assigns final_priority using 3-point scoring system
+    escalate.js      → assigns escalation status based on final_priority
   test/
-    testcases.js     → 20 test cases covering edge cases
+    testcases.js     → 22 test cases covering edge cases
   index.js           → ties everything together, prints final output
 
-# Logic explanation -
+## Logic Explanation
 
-  Validation:
+### Validation
 → rejects missing fields, invalid formats, duplicate ids,
   future timestamps, wrong field values
 
-Department Routing:
+### Department Routing
 → payment   → Finance
 → technical → Tech
 → delivery  → Logistics
 → account   → Support
 → unknown   → rejected
 
-Priority Engine (point system):
+### Priority Engine (point system)
 → 1 point if complaint is older than 545 days
 → 1 point if customer is premium
 → 1 point if original priority is high
@@ -43,18 +46,16 @@ Priority Engine (point system):
 → 2 points = medium final priority
 → 0-1 points = low final priority
 
-Escalation:
-→ complaints with 2 or more points are escalated
-→ complaints with less than 2 points are not escalated
+### Escalation
+→ high and medium priority complaints are escalated
+→ low priority complaints are not escalated
 
-Conflict Resolution (equal urgency):
-→ if two complaints have same final priority
+### Conflict Resolution (equal urgency)
+→ if two complaints have the same final priority
 → older complaint goes first
 → if same date — premium customer goes first
 
-
-# Assumptions 
-
+## Assumptions
 → complaint_id must follow format C + digits (C001, C002)
 → unknown issue types are rejected as invalid
 → resolved complaints are still validated but kept in output
@@ -84,9 +85,8 @@ Conflict Resolution (equal urgency):
 → numeric complaint id instead of string (TC20)
 → same final priority via different point combinations — conflict resolution tested (TC21, TC22)
 
-# Known Limitations
-
-→ faulty complaint text detection not implemented 
+## Known Limitations
+→ faulty complaint text detection not implemented
   (assignment uses structured input not free text)
 → unknown issue types are rejected rather than routed
 → no database — all data is hardcoded in testcases.js
