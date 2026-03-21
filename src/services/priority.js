@@ -1,27 +1,48 @@
 import {accountQueries, paymentQueries, technicalQueries, deliveryQueries} from './deptrouter.js'
 
-function priorityCheck(deptQueries){
-  deptQueries.sort((a, b) => { // sort picks the complaints in pairs and then fetches the data from them and sorts them on the basis of 1, 0 , -1
-  const dateA = new Date(a.created_time)
-  const dateB = new Date(b.created_time)
 
-  // if dates are different — older comes first
-  if (dateA - dateB !== 0) {
-    return dateA - dateB
-  }
-
-  // if dates are same — premium comes before regular
-  if (a.customer_type === "premium" && b.customer_type === "regular") return -1  // a first
-  if (a.customer_type === "regular" && b.customer_type === "premium") return 1   // b first
-  return 0  // both same type, keep order
-})
-
+// calculates how many days old a complaint is from today
+function daysOld(created_time) {
+  const now = new Date()
+  const created = new Date(created_time)
+  var diff = now - created                              // difference in milliseconds
+  var days = Math.floor(diff / (1000 * 60 * 60 * 24))  // convert milliseconds to days
+  return days
 }
+
+function newPriority(deptQueries) {
+  deptQueries.forEach((query) => {
+    let point = 0
+
+    // point 1 — complaint has been unresolved for more than 545 days
+    if (daysOld(query.created_time) > 545) point++
+
+    // point 2 — premium customers get higher urgency
+    if (query.customer_type === "premium") point++
+
+    // point 3 — complaint was already marked high priority on input
+    if (query.priority === "high") point++
+
+    if (point === 3) {
+      query.final_priority = "high"
+    } else if (point === 2) {
+      query.final_priority = "medium"
+
+    } else {
+      query.final_priority = "low"
+
+    }
+  })
+}
+
+
+
+
 // console.log(paymentQueries)
-priorityCheck(paymentQueries)
-priorityCheck(accountQueries)
-priorityCheck(technicalQueries)
-priorityCheck(deliveryQueries)
+newPriority(paymentQueries)
+newPriority(accountQueries)
+newPriority(technicalQueries)
+newPriority(deliveryQueries)
 
 
 export {paymentQueries, accountQueries, technicalQueries, deliveryQueries}
